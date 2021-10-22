@@ -1,0 +1,255 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ES6 Projects</title>
+  <script src="./timeAdder.js"></script>
+</head>
+<style>
+  body {
+    margin: 0;
+  }
+  main {
+    margin: 1em;
+  }
+  h1 {
+    margin: 0;
+    padding: 0.25em;
+    background-color: #ddd;
+  }
+  hr {
+    margin: 0;
+    color:  orange;
+  }
+  #time-adder {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    font-weight: bold;
+  }
+  div#form {
+    width: 350%;
+    display: inline-block;
+    padding: 0.5rem;
+    background-color: #123321;
+    border: thin solid #123321;
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+    color: #eee;
+  }
+  form {
+    margin: 0;
+  }
+  input, select {
+    margin-right: 1em;
+  }
+  div#result {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #edccde;
+    border: thin solid #edccde;
+    border-bottom-right-radius: 1rem;
+    border-top-right-radius: 1rem;
+    color: #123321;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  h3, h4 {
+    margin-bottom: 0.15em;
+  }
+  h3 {
+    cursor: pointer;
+    background-color: skyblue;
+  }
+  span {
+    display: inline-block;
+    width: 49.6%;
+  }
+  span:last-child {
+    text-align: end;
+  }
+  p {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+  }
+  code {
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    padding: 0 0.5em;
+    background-color: #ccc;
+  }
+  table, td, th {
+    border: 1px solid #666;
+    border-collapse: collapse;
+  }
+  table {
+    width: 100%;
+    text-align: center;
+    font-family: 'Courier New';
+  }
+  td:first-child {
+    width: 5%;
+  }
+  tr:nth-child(even) {
+    background-color: #ccc;
+  }
+  thead, th {
+    background-color: tan;
+  }
+  thead, th, td:first-child {
+    font-family: 'Calibri';
+  }
+
+  #description {
+    visibility: hidden;
+    height: 0;
+  }
+
+  .show {
+    visibility: visible !important;
+    height: auto !important;
+    transition: all 0.5s linear;
+    -moz-transition: all 0.5s linear;
+  }
+
+  .success {
+    background-color: green !important;
+    color: white !important;
+    border-color: green !important;
+  }
+  .error {
+    background-color: red !important;
+    color: white !important;
+    border-color: red !important;
+  }
+  #error-field {
+    height: 0;
+    transition: all 0.2s !important;
+  }
+
+  .height {
+    height: 2rem !important;
+  }
+</style>
+<body>
+  <header>
+    <h1>
+      Time Adder
+    </h1> 
+    <hr>
+  </header>
+  <main>
+    <div id="time-adder">
+      <div id="form">
+        <form id="time-form" method="post" name="time-form">
+          <label for="time1">Time 1</label>
+          <input type="number" min="0" name="time1" required>
+          <label for="unit1">Unit 1</label>
+          <select name="unit1" id="unit1" required>
+            <option value="" selected>Select a Unit</option>
+            <option value="days">Days</option>
+            <option value="day">Day</option>
+            <option value="hours">Hours</option>
+            <option value="hour">Hour</option>
+            <option value="minutes">Minutes</option>
+            <option value="minute">Minute</option>
+            <option value="seconds">Seconds</option>
+            <option value="second">Second</option>
+          </select>
+          <label for="time2">Time 2</label>
+          <input type="number" min="0"  name="time2" required>
+          <label for="unit2">Unit 2</label>
+          <select name="unit2" id="unit2" required>
+            <option value="" selected>Select a Unit</option>
+            <option value="days">Days</option>
+            <option value="day">Day</option>
+            <option value="hours">Hours</option>
+            <option value="hour">Hour</option>
+            <option value="minutes">Minutes</option>
+            <option value="minute">Minute</option>
+            <option value="seconds">Seconds</option>
+            <option value="second">Second</option>
+          </select>
+          <input type="submit" value="Add Time">
+        </form>
+      </div>
+      <div id="result">
+        <div id="result-div">
+        </div>
+      </div>
+    </div>
+    <div id="error-field"></div>
+    <div>        
+      <h3 id="description-heading"><span>Description</span> <span id="plus">+</span></h3>
+    </div>
+    <div id="description">
+      <p>
+        This page allows you to enter time and unit of time to get the result. <br> 
+        The unit of the final result is based on whether the final time is a whole number of <code>days</code> or <code>hours</code> or <code>minutes</code>. Otherwise final unit wll be <code>seconds</code>. 
+        <h4>Rules:</h4>
+        <ol>
+          <li>Time should be an integer greater than or equal to 0</li>
+          <li>Allowed units are <code>["day", "days", "hour", "hours", "minute", "minutes", "second", "seconds"]</code></li>
+          <li>Please enter appropriate units. E.g if <code>time = 1</code>, then use <code>singular</code> units otherwise use <code>plural</code> units</li>
+        </ol>
+        <h4>Examples:</h4>
+        <table>
+          <thead>
+            <tr>
+              <th colspan="5">Inputs</th>
+              <th colspan="2">Result</th>
+            </tr>
+            <tr>
+              <th>Sr. #</th>
+              <th>Time 1</th>
+              <th>Unit 1</th>
+              <th>Time 2</th>
+              <th>Unit 2</th>
+              <th>Final Time</th>
+              <th>Final Unit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>10</td>
+              <td>seconds</td>
+              <td>20</td>
+              <td>minutes</td>
+              <td>1210</td>
+              <td>seconds</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>30</td>
+              <td>seconds</td>
+              <td>20</td>
+              <td>days</td>
+              <td>1728030</td>
+              <td>seconds</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>5</td>
+              <td>minutes</td>
+              <td>1</td>
+              <td>hour</td>
+              <td>65</td>
+              <td>minutes</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>0</td>
+              <td>days</td>
+              <td>0</td>
+              <td>minutes</td>
+              <td>0</td>
+              <td>seconds</td>
+            </tr>
+          </tbody>
+        </table>
+      </p>      
+    </div>
+  </main>
+</body>
+</html>
