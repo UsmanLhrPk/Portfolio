@@ -1,73 +1,169 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=view-width, initial-scale=1.0">
   <title>Elevator</title>
 </head>
 <style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+  }
+
   body, .row {
     display: flex;
     flex-direction: row;
+    place-content: center;
   }
 
-  body, #elvA, .row {
+  #status-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  body {
     height: 100%;
   }
 
-  .row:first-child {
-    border-right: 2px solid orange;
+  #elvA, #elvB {
+    height: 50rem;
+  }
+
+  #elvA {
+    border-right: 1px solid orange;
+  }
+
+  .row {
+    padding: 1em;
+    border-bottom: 1px solid orange;
   }
 
   .indicator {
-    width: 3em;
-    height: 3em;
-    line-height: 3em;
-    border: 1px double #333;
-    color: #333;
+    width: 2.5em;
+    height: 2.5em;
+    line-height: calc(2.5em - 11px);
+    border: 1px double #111;
+    border-width: 5px;
+    border-color: #333;
+    color: #111;
     margin-right: 4px;
     text-align: center;
     border-radius: 50%;
-  }
-
-  .indicator:last-child {
-    margin-right: 0;
+    transition: all 0.2s ease-in-out;
   }
 
   #elvA, #elvB {
     width: 50%;
   }
+
+  h3 {
+    margin: 0;
+    padding: 0.25em;
+    width: 100%;
+    background-color: gold;
+    text-align: center;
+  }
+
+  hr {
+    margin: 0;
+    color: gold;
+    width: 100%;
+    border-bottom: none;
+  }
+
+  #elvAStatus, #elvBStatus {
+    align-self: start;
+    width: 100%;
+    height: 30rem;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    border-bottom: 1px solid tan;
+  }
+
+  .status {
+    font-family: 'CaskaydiaCove Nerd Font';
+    line-height: 2em;
+    margin: 0;
+    font-size: .75em;
+    height: 2em;
+    width: 100%;
+  }
+
+  table {
+    border-collapse: collapse !important;
+  }
+
+  .stat-col {
+    border-right: 1px solid red;
+    border-bottom: 1px dotted red;
+    font-size: .75em;
+    line-height: .75em; 
+    padding-right: 0.5em;
+  }
+  
+  .stat-msg {
+    border-bottom: 1px dotted #444;
+    width: 100%;
+    padding-left: 0.5em;
+  }
+
+  .selected {
+    border-color: yellow !important;
+  }
+
+  .current {
+    background-color: yellow;
+  }
 </style>
 <body>
   <section id="elvA">
     <div class="row">
-      <div id="aF-1" class="indicator">-1</div>
-      <div id="aF0" class="indicator">0</div>
-      <div id="aF1" class="indicator">1</div>
-      <div id="aF2" class="indicator">2</div>
-      <div id="aF3" class="indicator">3</div>
-      <div id="aF4" class="indicator">4</div>
-      <div id="aF5" class="indicator">5</div>
-      <div id="aF6" class="indicator">6</div>
-      <div id="aF7" class="indicator">7</div>
-      <div id="aF8" class="indicator">8</div>
-      <div id="aF9" class="indicator">9</div>
+      <div id="A-1" data-lift="A" data-floor="-1" class="indicator" onclick="callElevator.bind(this)();">-1</div>
+      <div id="A0" data-lift="A" data-floor="0" class="indicator current" onclick="callElevator.bind(this)();">0</div>
+      <div id="A1" data-lift="A" data-floor="1" class="indicator" onclick="callElevator.bind(this)();">1</div>
+      <div id="A2" data-lift="A" data-floor="2" class="indicator" onclick="callElevator.bind(this)();">2</div>
+      <div id="A3" data-lift="A" data-floor="3" class="indicator" onclick="callElevator.bind(this)();">3</div>
+      <div id="A4" data-lift="A" data-floor="4" class="indicator" onclick="callElevator.bind(this)();">4</div>
+      <div id="A5" data-lift="A" data-floor="5" class="indicator" onclick="callElevator.bind(this)();">5</div>
+      <div id="A6" data-lift="A" data-floor="6" class="indicator" onclick="callElevator.bind(this)();">6</div>
+      <div id="A7" data-lift="A" data-floor="7" class="indicator" onclick="callElevator.bind(this)();">7</div>
+      <div id="A8" data-lift="A" data-floor="8" class="indicator" onclick="callElevator.bind(this)();">8</div>
+      <div id="A9" data-lift="A" data-floor="9" class="indicator" onclick="callElevator.bind(this)();">9</div>
+    </div>
+    <div id="status-section">
+      <h3>Elevator A</h3>
+      <hr>
+      <div id="elvAStatus">
+        <table id="logA">
+        </table>
+      </div>
     </div>
   </section>
   <section id="elvB">
     <div class="row">
-      <div id="bF0" class="indicator">0</div>
-      <div id="bF1" class="indicator">1</div>
-      <div id="bF2" class="indicator">2</div>
-      <div id="bF3" class="indicator">3</div>
-      <div id="bF4" class="indicator">4</div>
-      <div id="bF5" class="indicator">5</div>
-      <div id="bF6" class="indicator">6</div>
-      <div id="bF7" class="indicator">7</div>
-      <div id="bF8" class="indicator">8</div>
-      <div id="bF9" class="indicator">9</div>
-      <div id="bF10" class="indicator">10</div>
+      <div id="B0" data-lift="B" data-floor="0"  class="indicator" onclick="callElevator.bind(this)();">0</div>
+      <div id="B1" data-lift="B" data-floor="1" class="indicator" onclick="callElevator.bind(this)();">1</div>
+      <div id="B2" data-lift="B" data-floor="2" class="indicator" onclick="callElevator.bind(this)();">2</div>
+      <div id="B3" data-lift="B" data-floor="3" class="indicator" onclick="callElevator.bind(this)();">3</div>
+      <div id="B4" data-lift="B" data-floor="4" class="indicator" onclick="callElevator.bind(this)();">4</div>
+      <div id="B5" data-lift="B" data-floor="5" class="indicator" onclick="callElevator.bind(this)();">5</div>
+      <div id="B6" data-lift="B" data-floor="6" class="indicator" onclick="callElevator.bind(this)();">6</div>
+      <div id="B7" data-lift="B" data-floor="7" class="indicator" onclick="callElevator.bind(this)();">7</div>
+      <div id="B8" data-lift="B" data-floor="8" class="indicator" onclick="callElevator.bind(this)();">8</div>
+      <div id="B9" data-lift="B" data-floor="9" class="indicator" onclick="callElevator.bind(this)();">9</div>
+      <div id="B10" data-lift="B" data-floor="10" class="indicator" onclick="callElevator.bind(this)();">10</div>
     </div>
-
+    <div id="status-section">
+      <h3>Elevator B</h3>
+      <hr>
+      <div id="elvBStatus"></div>
+        <table id="logB">
+        </table> 
+    </div>
   </section>
+  <script src="./elevator.js"></script>
 </body>
 </html>
