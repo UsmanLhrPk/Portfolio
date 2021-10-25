@@ -2,136 +2,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=view-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./styles.css">
   <title>Elevator</title>
 </head>
-<style>
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-  }
-
-  body, .row {
-    display: flex;
-    flex-direction: row;
-    place-content: center;
-  }
-
-  #status-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  body {
-    height: 100%;
-  }
-
-  #elvA, #elvB {
-    height: 50rem;
-  }
-
-  #elvA {
-    border-right: 1px solid orange;
-  }
-
-  .row {
-    padding: 1em;
-    border-bottom: 1px solid orange;
-  }
-
-  .indicator {
-    width: 2.5em;
-    height: 2.5em;
-    line-height: calc(2.5em - 11px);
-    border: 1px double #111;
-    border-width: 5px;
-    border-color: #333;
-    color: #111;
-    margin-right: 4px;
-    text-align: center;
-    border-radius: 50%;
-    transition: all 0.2s ease-in-out;
-  }
-
-  #elvA, #elvB {
-    width: 50%;
-  }
-
-  h3 {
-    margin: 0;
-    padding: 0.25em;
-    width: 100%;
-    background-color: gold;
-    text-align: center;
-  }
-
-  hr {
-    margin: 0;
-    color: gold;
-    width: 100%;
-    border-bottom: none;
-  }
-
-  #elvAStatus, #elvBStatus {
-    align-self: start;
-    width: 100%;
-    height: 30rem;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-    border-bottom: 1px solid tan;
-  }
-
-  .status {
-    font-family: 'CaskaydiaCove Nerd Font';
-    line-height: 2em;
-    margin: 0;
-    font-size: .75em;
-    height: 2em;
-    width: 100%;
-  }
-
-  table {
-    border-collapse: collapse !important;
-  }
-
-  .stat-col {
-    border-right: 1px solid red;
-    border-bottom: 1px dotted red;
-    font-size: .75em;
-    line-height: .75em; 
-    padding-right: 0.5em;
-  }
-  
-  .stat-msg {
-    border-bottom: 1px dotted #444;
-    width: 100%;
-    padding-left: 0.5em;
-  }
-
-  .selected {
-    border-color: yellow !important;
-  }
-
-  .current {
-    background-color: yellow;
-  }
-</style>
 <body>
   <section id="elvA">
     <div class="row">
-      <div id="A-1" data-lift="A" data-floor="-1" class="indicator" onclick="callElevator.bind(this)();">-1</div>
-      <div id="A0" data-lift="A" data-floor="0" class="indicator current" onclick="callElevator.bind(this)();">0</div>
-      <div id="A1" data-lift="A" data-floor="1" class="indicator" onclick="callElevator.bind(this)();">1</div>
-      <div id="A2" data-lift="A" data-floor="2" class="indicator" onclick="callElevator.bind(this)();">2</div>
-      <div id="A3" data-lift="A" data-floor="3" class="indicator" onclick="callElevator.bind(this)();">3</div>
-      <div id="A4" data-lift="A" data-floor="4" class="indicator" onclick="callElevator.bind(this)();">4</div>
-      <div id="A5" data-lift="A" data-floor="5" class="indicator" onclick="callElevator.bind(this)();">5</div>
-      <div id="A6" data-lift="A" data-floor="6" class="indicator" onclick="callElevator.bind(this)();">6</div>
-      <div id="A7" data-lift="A" data-floor="7" class="indicator" onclick="callElevator.bind(this)();">7</div>
-      <div id="A8" data-lift="A" data-floor="8" class="indicator" onclick="callElevator.bind(this)();">8</div>
-      <div id="A9" data-lift="A" data-floor="9" class="indicator" onclick="callElevator.bind(this)();">9</div>
+      <button data-elevator="A" onclick="stopElv.bind(this)();" class="button stop">STOP</button>
+      <button data-elevator="A" onclick="runElv.bind(this)();" class="button run">RUN</button>
+      <div class="column">
+        <div data-elevator="A" data-floor="-1" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A-1" data-elevator="A" data-floor="-1" class="indicator" onclick="callElevator.bind(this)();">-1</div>
+        <div class="inactive">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="0" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A0" data-elevator="A" data-floor="0" class="indicator current" onclick="callElevator.bind(this)();">0</div>
+        <div data-elevator="A" data-floor="0" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="1" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A1" data-elevator="A" data-floor="1" class="indicator" onclick="callElevator.bind(this)();">1</div>
+        <div data-elevator="A" data-floor="2" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="2" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A2" data-elevator="A" data-floor="2" class="indicator" onclick="callElevator.bind(this)();">2</div>
+        <div data-elevator="A" data-floor="2" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="3" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A3" data-elevator="A" data-floor="3" class="indicator" onclick="callElevator.bind(this)();">3</div>
+        <div data-elevator="A" data-floor="3" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="4" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A4" data-elevator="A" data-floor="4" class="indicator" onclick="callElevator.bind(this)();">4</div>
+        <div data-elevator="A" data-floor="4" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="5" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A5" data-elevator="A" data-floor="5" class="indicator" onclick="callElevator.bind(this)();">5</div>
+        <div data-elevator="A" data-floor="5" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="6" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A6" data-elevator="A" data-floor="6" class="indicator" onclick="callElevator.bind(this)();">6</div>
+        <div data-elevator="A" data-floor="6" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="7" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A7" data-elevator="A" data-floor="7" class="indicator" onclick="callElevator.bind(this)();">7</div>
+        <div data-elevator="A" data-floor="7" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="A" data-floor="8" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="A8" data-elevator="A" data-floor="8" class="indicator" onclick="callElevator.bind(this)();">8</div>
+        <div data-elevator="A" data-floor="8" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div class="inactive">&uArr;</div>
+        <div id="A9" data-elevator="A" data-floor="9" class="indicator" onclick="callElevator.bind(this)();">9</div>
+        <div data-elevator="A" data-floor="9" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
     </div>
     <div id="status-section">
       <h3>Elevator A</h3>
@@ -144,24 +77,71 @@
   </section>
   <section id="elvB">
     <div class="row">
-      <div id="B0" data-lift="B" data-floor="0"  class="indicator" onclick="callElevator.bind(this)();">0</div>
-      <div id="B1" data-lift="B" data-floor="1" class="indicator" onclick="callElevator.bind(this)();">1</div>
-      <div id="B2" data-lift="B" data-floor="2" class="indicator" onclick="callElevator.bind(this)();">2</div>
-      <div id="B3" data-lift="B" data-floor="3" class="indicator" onclick="callElevator.bind(this)();">3</div>
-      <div id="B4" data-lift="B" data-floor="4" class="indicator" onclick="callElevator.bind(this)();">4</div>
-      <div id="B5" data-lift="B" data-floor="5" class="indicator" onclick="callElevator.bind(this)();">5</div>
-      <div id="B6" data-lift="B" data-floor="6" class="indicator" onclick="callElevator.bind(this)();">6</div>
-      <div id="B7" data-lift="B" data-floor="7" class="indicator" onclick="callElevator.bind(this)();">7</div>
-      <div id="B8" data-lift="B" data-floor="8" class="indicator" onclick="callElevator.bind(this)();">8</div>
-      <div id="B9" data-lift="B" data-floor="9" class="indicator" onclick="callElevator.bind(this)();">9</div>
-      <div id="B10" data-lift="B" data-floor="10" class="indicator" onclick="callElevator.bind(this)();">10</div>
+      <button data-elevator="B" onclick="stopElv.bind(this)();" class="button stop">STOP</button>
+      <button data-elevator="B" onclick="runElv.bind(this)();" class="button run">RUN</button>
+      <div class="column">
+        <div data-elevator="B" data-floor="0" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B0" data-elevator="B" data-floor="0"  class="indicator current" onclick="callElevator.bind(this)();">0</div>
+        <di class="inactive">&dArr;</di>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="1" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B1" data-elevator="B" data-floor="1" class="indicator" onclick="callElevator.bind(this)();">1</div>
+        <div data-elevator="B" data-floor="1" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="2" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B2" data-elevator="B" data-floor="2" class="indicator" onclick="callElevator.bind(this)();">2</div>
+        <div data-elevator="B" data-floor="2" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="3" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B3" data-elevator="B" data-floor="3" class="indicator" onclick="callElevator.bind(this)();">3</div>
+        <div data-elevator="B" data-floor="3" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="4" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B4" data-elevator="B" data-floor="4" class="indicator" onclick="callElevator.bind(this)();">4</div>
+        <div data-elevator="B" data-floor="4" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="5" data-direction="up8 class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B5" data-elevator="B" data-floor="5" class="indicator" onclick="callElevator.bind(this)();">5</div>
+        <div data-elevator="B" data-floor="5" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="6" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B6" data-elevator="B" data-floor="6" class="indicator" onclick="callElevator.bind(this)();">6</div>
+        <div data-elevator="B" data-floor="6" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="7" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B7" data-elevator="B" data-floor="7" class="indicator" onclick="callElevator.bind(this)();">7</div>
+        <div data-elevator="B" data-floor="7" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="8" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B8" data-elevator="B" data-floor="8" class="indicator" onclick="callElevator.bind(this)();">8</div>
+        <div data-elevator="B" data-floor="8" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div data-elevator="B" data-floor="9" data-direction="up" class="direction-indicator" onclick="callElevator.bind(this)();">&uArr;</div>
+        <div id="B9" data-elevator="B" data-floor="9" class="indicator" onclick="callElevator.bind(this)();">9</div>
+        <div data-elevator="B" data-floor="9" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
+      <div class="column">
+        <div class="inactive">&uArr;</div>
+        <div id="B10" data-elevator="B" data-floor="10" class="indicator" onclick="callElevator.bind(this)();">10</div>
+        <div data-elevator="B" data-floor="10" data-direction="down" class="direction-indicator" onclick="callElevator.bind(this)();">&dArr;</div>
+      </div>
     </div>
     <div id="status-section">
       <h3>Elevator B</h3>
       <hr>
-      <div id="elvBStatus"></div>
+      <div id="elvBStatus">
         <table id="logB">
         </table> 
+      </div>
     </div>
   </section>
   <script src="./elevator.js"></script>

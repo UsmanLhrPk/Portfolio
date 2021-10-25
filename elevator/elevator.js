@@ -3,7 +3,7 @@
  * Keeping Up With the Javascripts - Part 1: ES6
  * Pirple
  * 
- * Usman Javaid
+ * @author: Usman Javaid
  */
 
 /*
@@ -25,254 +25,287 @@
  * 
  */
 
-const SECOND = 1000;
-const UP = 1;
-const DOWN = -1;
-
 class Elevator {
-
   constructor(name, minFloor, maxFloor) {
-    this.name = name;
-    this.minFloor = minFloor;
-    this.maxFloor = maxFloor;
+    this.name = name
+    this.minFloor = minFloor
+    this.maxFloor = maxFloor
 
-    this.direction = null;
-    this.isMoving = false;
+    this.queueDirection = null
+    this.elevatorDirection = null
+
     this.queue = {
-                  up: [],
-                  down: []
-                 };
+                  "up": [],
+                  "down": [],
+                  "upNext": null,
+                  "downNext": null,
+                 }
 
-    this.currentFloor = 0;
-    this.interval = null;
-    this.destinationFloor = null;
+    this.destinationFloor = null
+    // If the elevator goes to ground floor than that must be the initial floor
+    // Otherwise it should be at the elevator's minFloor 
+    this.currentFloor = minFloor <= 0 ? 0 : minFloor 
+
+    this.isMoving = false
+
+    this.interval = null
   }
 
-  selectDirection() {
-
-    if (this.queue["up"].length > 0) {
-      this.direction = "up";
-    } else if (this.queue["down"].length > 0) {
-        this.direction = "down";
-    } else {
-      this.direction = null;
-    }
-    (this.destinationFloor - this.currentFloor) > 0 ? console.log(`The current direction is: up`) : console.log(`The current direction is: down`);
-  }
-
-  /*
-  *   CALL FUNCTION
-  * 
-  *   If direction is not null then push the floor to the selected direction in the queue
-  *   Otherwise select the direction based on the called floor relative to the current floor
-  *    
-  */
-
-  call(floor, direction) {
-
-    let validFloor = floor >= this.minFloor && floor <= this.maxFloor && floor !== this.currentFloor; // floor must be within elevator range and current floor cannot be called
-    let validDirection = direction === "up" || direction === "down";
-
-    if (validFloor && validDirection) {
-      if (this.queue[direction].includes(floor)) {
-        consoleLog(`floor ${floor} already in queue`, this.name);
-
-      } else {
-        this.queue[direction].push(floor);
-
-        if (direction === this.direction && ( floor < this.destinationFloor && floor - this.currentFloor >= 2)) {
-          this.destinationFloor = floor;
-          consoleLog(`The destination has been updated to: ${this.destinationFloor}`, this.name);
+  selectQueueDirection() {
+    const otherQueue = this.otherQueueDirection() // if queueDirection = "up"; otherQueue = "down" and vice versa
+    if (this.queueDirection) { // If queueDirection is not null
+      if (this.queue[this.queueDirection].length === 0) { // If queue in queueDirection is empty
+        if (this.queue[otherQueue].length > 0) {
+          this.queueDirection = otherQueue
+        } else {
+          this.queueDirection = null
         }
-
+      } else if (this.queue[this.queueDirection].length > 0) { // If the queue in queueDirecion is not empty
+        if (this.queueDirection === "up" && this.queue["upNext"] < this.currentFloor) {
+          this.queueDirection = this.queue["down"].length > 0 ? "down" : null
+        } else if (this.queueDirection === "down" && this.queue["downNext"] > this.currentFloor) {
+          this.queueDirection = this.queue["up"].length > 0 ? this.queueDirection = "up" : this.queueDirection = null
+        }
       }
-      
-      this.isMoving = true;
-
-    } else {
-      console.log("Please enter a valid direction either \"up\" or \"down\"! OR");
-      console.log("The elevator does not go to the selected floor!");
-
+    } else { // If queueDirection is null
+      if (this.queue["up"].length > 0 && this.queue["down"].length === 0) { // down queue is empty and up queue is not
+        this.queueDirection = "up"
+      } else if (this.queue["down"].length > 0 && this.queue["up"].length === 0) { // up queue is empty and down queue is not
+        this.queueDirection = "down"
+      } else if (this.queue["up"].length > 0 && this.queue["down"].length > 0) { // both queues not empty
+        // Choose the queue whose next floor is closest to the current floor
+        if ((this.queue["up"][0] - this.currentFloor) <= (this.currentFloor - this.queue["down"][0])) {
+          this.queueDirection = "up"
+        } else if ((this.queue["up"][0] - this.currentFloor) >= (this.currentFloor - this.queue["down"][0])) {
+          this.queueDirection = "down"
+        }
+      }
     }
-
-    // Get the 'up' queue in ascending order 
-    // and 'down' queue in descending order
-    this.queue["up"].sort();
-    this.queue["down"].sort();
-    this.queue["down"].reverse();
-
-    // Call moveElevator when elevator isMoving is set to true 
-    // and this.interval is null otherwise it will instantiate multiple interval instances
-    if (this.isMoving && !this.interval) { 
-      this.moveElevator();
-    }
-
-    consoleLog(`The current queue is ${JSON.stringify(this.queue)}`, this.name);
   }
 
-  selectNextFloor() {
+  // Call the elevator to the floor
+  call(floor, direction=null) {
+    if (floor !== this.currentFloor) {
+      if (!direction) {
+        // If the direction is null
+        // Choose direction based on the current floor relative to the selected floor
+        if (this.currentFloor < floor) {
+          direction = "up"
+        } else if (this.currentFloor > floor) {
+          direction = "down"
+        }
+      }
 
-    if (this.queue[this.direction].length > 0 || this.queue[this.direction][0] < this.currentFloor) {
-      this.destinationFloor = this.queue[this.direction][0];
+      if (!this.queue[direction].includes(floor)) { // Make sure the floor called isn't alread in queue
+        this.queue[direction].push(floor)
 
+        if (this.isMoving) {
+          this.selectDestinationFloor() // update the destination floor accordingly
+        } else {
+          this.isMoving = true
+          this.moveElevator()
+        }
+        consoleLog(`The current queue is <span class="number">${JSON.stringify(this.queue)}</span>`, this.name);
+      } else { // if (!this.queue[direction].includes(floor))
+        consoleLog(`Floor <span class="number">${floor}</span> already in queue`, this.name)
+      }
+
+
+    } else { // if (floor !== this.currentFloor) {
+      consoleLog("Elevator is already at the selected floor", this.name)
+    }
+  }
+
+  selectDestinationFloor() {
+    // upNext
+    if (this.queue["up"].length > 0) { //
+      let upQueue = this.queue["up"].map ((e) => e)
+      upQueue.sort() // => [0, 1, 2, 3, ....]
+      if (upQueue[0] > this.currentFloor) {
+        this.queue["upNext"] = upQueue[0]
+      } else if (upQueue[0] < this.currentFloor) {
+        this.queue["upNext"] = upQueue.reverse()[0]
+      }
     } else {
+      this.queue["upNext"] = null
+    }
+    // downNext
+    if (this.queue["down"].length > 0) {
+      let downQueue = this.queue["down"].map ((e) => e)
+      downQueue.sort() // => [0, 1, 2, 3, ....]
+      if (downQueue[0] < this.currentFloor) {
+        this.queue["downNext"] = downQueue.reverse()[0]
+      } else if (downQueue[0] > this.currentFloor) {
+        this.queue["downNext"] = downQueue[0]
+      }
+    } else {
+      this.queue["downNext"] = null
+    }
 
-      if (this.direction === "up" && this.queue["down"].length > 0) {
-        this.direction = "down";
-        this.destinationFloor = this.queue[this.direction][0];
-
-      } else if (this.direction === "down" && this.queue["up"].length > 0) {
-        this.direction = "up";
-        this.destinationFloor = this.queue[this.direction][0];
-
-      } else {
-        this.stopElevator();
+    // destinationFloor
+    if (this.queue["upNext"] !== null || this.queue["downNext"] !== null){
+      if (this.queueDirection === "up") {
+        this.destinationFloor = this.queue["upNext"]
+      } else if (this.queueDirection === "down") {
+        this.destinationFloor = this.queue["downNext"]
+      }
+    } else {
+      if (this.isMoving) {
+        this.destinationFloor = null
+        this.stopElevator()
       }
     }
-    
-    this.destinationFloor ? consoleLog(`The current destination is: ${this.destinationFloor}`, this.name) : null;
+    this.destinationFloor ? consoleLog(`The current destination is: <span class="number">${this.destinationFloor}</span>`, this.name) : "EMPTY";
   }
 
   moveElevator() {
     if (this.isMoving) {
-      if (!this.direction) {
-        this.selectDirection();
-        this.selectNextFloor();
+      if(!this.queueDirection) {
+        this.selectQueueDirection()
+        this.selectDestinationFloor()
       }
-      
-      this.interval = setInterval(() => {
-        if (this.destinationFloor > this.currentFloor) {
-          this.currentFloor++;
-        } else {
-          this.currentFloor--;
-        }
-        consoleLog(`The current floor is: ${this.currentFloor}`, this.name);
-        deselectFloor(this.currentFloor, this.name);
-        updateCurrent(this.currentFloor, this.name);
 
-        if (this.currentFloor === this.destinationFloor) {
-          this.handleElvArrival();
-        }
-      }, SECOND);
+      if (this.destinationFloor !== null && this.queueDirection) {
+        this.interval = setInterval(() => {
+          if (this.destinationFloor > this.currentFloor) {
+            this.currentFloor++;
+          } else if (this.destinationFloor < this.currentFloor) {
+            this.currentFloor--;
+          }
+          consoleLog(`The current floor is: <span class="number">${this.currentFloor}</span>`, this.name);
+          updateCurrent(this.currentFloor, this.name);
+
+          if (this.currentFloor === this.destinationFloor) {
+            this.handleElvArrival()
+          }
+        }, 1000)
+      }
     }
   }
 
   handleElvArrival() {
-    consoleLog(`Elevator arrived at floor ${this.currentFloor}`, this.name);
-    consoleLog(`DOORS<=< >=>OPENING`, this.name);
+    deselectFloor(this.currentFloor, this.name);
+    consoleLog(`Elevator arrived at floor <span class="number">${this.currentFloor}</span>`, this.name);
+    consoleLog(`DOORS &lArr; &rArr; OPENING`, this.name, {"background-color": "green", "color": "white", "font-size": "1.25rem", "text-align": "center"});
 
-    this.queue[this.direction].shift();
+    let i = this.queue[this.queueDirection].indexOf(this.currentFloor)
+    this.queue[this.queueDirection].splice(i, 1)
+    consoleLog(`The ${this.queueDirection} queue now is: <span class="number">${JSON.stringify(this.queue[this.queueDirection])}</span>`, this.name);
+
     clearInterval(this.interval);
-    // updateCurrent(this.currentFloor);
     setTimeout(() => {
-      consoleLog("DOORS >=> <=< CLOSING", this.name);
-      consoleLog(`The queue now is: ${JSON.stringify(this.queue[this.direction])}`, this.name);
+      consoleLog("DOORS &rArr; &lArr; CLOSING", this.name, {"background-color": "magenta", "color": "white", "font-size": "1.25rem", "text-align": "center"});
 
-      this.selectNextFloor();
-      this.moveElevator();
-    }, 3 * SECOND);
+      this.selectQueueDirection()
+      this.selectDestinationFloor()
+      this.moveElevator()
+    }, 3 * 1000)
   }
 
   stopElevator() {
-    this.isMoving = false;
-    this.direction = null;
-    this.destinationFloor = null;
-    clearInterval(this.interval);
-    this.interval = null;
-    consoleLog(`The elevator has now stopped!`, this.name);
-    consoleLog(`Queue is now ${JSON.stringify(this.queue["up"]), JSON.stringify(this.queue["down"])}`, this.name);
-    consoleLog(`Current floor is: ${this.currentFloor}`, this.name);
+    this.isMoving = false
+    clearInterval(this.interval)
+    this.interval = null
+    consoleLog(`The elevator has now stopped!`, this.name, {"background-color": "black", "color": "white", "text-align": "center"});
+    consoleLog(`Queue is now <span class="number">${JSON.stringify(this.queue["up"]), JSON.stringify(this.queue["down"])}</span>`, this.name);
+    consoleLog(`Current floor is: <span class="number">${this.currentFloor}</span>`, this.name);
   }
 
-  wait(ms) {
-    var start = Date.now(),
-        now = start;
-    while (now - start < ms) {
-      now = Date.now();
-    }
+  otherQueueDirection() {
+    return this.queueDirection === "up" ? "down" : this.queueDirection === "down" ? "up" : null
   }
-
-
-
 }
 
 let elvA = new Elevator("A", -1, 9);
 let elvB = new Elevator("B", 0, 10);
 
-// setInterval(() => {
-//   let floor = Math.floor(Math.random() * 10) - 1;
-//   let direction = Math.floor(Math.random() * 2);
 
-//   let d = new Date();
-
-//   console.log(`
-// =================================================================================================================================================
-// Elevator has been called to floor: "${floor}" @ "${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}" on "${d.getMonth()}-${d.getDate()}-${d.getFullYear()} "
-// =================================================================================================================================================
-//   `)
-
-//   if (direction === 0) {
-//     elvA.call(floor, "down");
-//   } else {
-//     elvA.call(floor, "up");
-//   }
-
-
-// }, Math.floor(Math.random() * 30000) + 1000);
-// 
 
 function callElevator() {
-  let classes = Array.from(this.classList);
-  if (classes.includes("selected")) {
-    consoleLog(`Floor ${this.dataset.floor} is already in queue`, this.dataset.lift)
+  let classes = Array.from(elvFloors[this.dataset.elevator][this.dataset.floor].classList);
+  let thisElementClasses = Array.from(this.classList)
+  let [floor, elv] = [parseInt(this.dataset.floor), this.dataset.elevator];
+  let direction = this.dataset.direction ? this.dataset.direction : null
+  let elevator = elv === "A" ? elvA : elvB;
+  if (classes.includes("selected") || floor === elevator.currentFloor) {
+    if (classes.includes("selected")) {
+      consoleLog(`Floor <span class="number">${this.dataset.floor}</span> is already in queue`, this.dataset.elevator)
+    } else if (floor === elevator.currentFloor) {
+      consoleLog(`<span class="number">${this.dataset.floor}</span> is the current floor`, this.dataset.elevator)
+    }
   } else {
-    classes.includes("current") ? null : this.classList.add("selected");  // only select if it's not the floor the evelator is currently at
-    console.log(this)
+    thisElementClasses.includes("direction-indicator") ? null : this.classList.add("selected")
+    elvFloors[this.dataset.elevator][this.dataset.floor].classList.add("selected")
 
     let d = new Date();
-    let [floor, elv, direction] = [parseInt(this.dataset.floor), this.dataset.lift, "up"];
 
-    consoleLog(`Elevator has been called to floor: "${floor}" @ "${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}" on "${d.getMonth()}-${d.getDate()}-${d.getFullYear()}"`, elv)
-    elv === "A" ? elvA.call(floor, direction) : elvB.call(elv, direction);
+    consoleLog(`Elevator has been called to floor: <span class="number">${floor}</span> @ "${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}" on "${d.getMonth()}-${d.getDate()}-${d.getFullYear()}"`, elv)
+    elevator.call(floor, direction);
   }
 }
 
-function consoleLog(msg, elv) {
+function consoleLog(msg, elv, options={}) {
   let table = elv == "A" ? tableA : tableB
   table.innerHTML += `<tr class="status">
-                        <td class="stat-col">==></td>
+                        <td class="stat-col">&#8667;</td>
                         <td class="stat-msg"> ${msg} </td>
                       </tr>`;
+
+  if (Object.keys(options).length > 0) {
+    for(const opt in options) {
+      table.lastChild.style[opt] = options[opt]
+    }
+  };
   table.parentNode.scrollTop += table.parentNode.scrollHeight;
   console.log(msg);
 }
 
-
-
 function updateCurrent(current, elv) {
-  let prev = document.getElementsByClassName("current");
-  prev[0].classList.remove("current")
-  // prev.classList.remove("current");
+  let prev = document.querySelector(`div[data-elevator="${elv}"].current`);
+  prev.classList.remove("current")
 
   elvFloors[elv][current].classList.add("current");
-
 }
 
 function deselectFloor(current, elv) {
   elvFloors[elv][current].classList.remove("selected");
 }
 
+function stopElv() {
+  let elevator = this.dataset.elevator === "A" ? elvA : elvB;
+  if(elevator.isMoving) {
+    elevator.stopElevator();
+  } else {
+    consoleLog("The elevator is not moving!", elevator.name);
+  }
+}
+
+function runElv() {
+  let elevator = this.dataset.elevator === "A" ? elvA : elvB;
+  if(elevator.isMoving) {
+    consoleLog("The elevator is already running", elevator.name);
+  } else {
+    elevator.selectDirection();
+    if (elevator.direction) {
+      elevator.isMoving = true;
+      elevator.moveElevator();  
+    } else {
+      consoleLog("The queue is empty", elevator.name);
+    }
+  }
+}
+
 // The following code will run at the beginning. To offload the reparsing of the same elements over and over again.
 let tableA = document.getElementById("logA");
 let tableB = document.getElementById("logB");
-let floorsA = document.querySelectorAll("div[data-lift='A']");
+let floorsA = document.querySelectorAll("div[data-elevator='A'].indicator");
 floorsA = Array.from(floorsA);
 floorsA.sort((a, b) =>{
   return parseInt(a.dataset.floor) - parseInt(b.dataset.floor)
 });
 
 
-let floorsB = document.querySelectorAll("div[data-lift='B']");
+let floorsB = document.querySelectorAll("div[data-elevator='B'].indicator");
 floorsB = Array.from(floorsB);
 floorsB.sort((a, b) =>{
   return parseInt(a.dataset.floor) - parseInt(b.dataset.floor)
@@ -285,5 +318,31 @@ const elvFloors = {
 
 for(const f in floorsA) {
   elvFloors["A"][f-1] = floorsA[f]
-  console.log(elvFloors["A"])
 }
+
+for(const f in floorsB) {
+  elvFloors["B"][f] = floorsB[f];
+}
+
+/*
+  setInterval(() => {
+    let floor = Math.floor(Math.random() * 10) - 1;
+    let direction = Math.floor(Math.random() * 2);
+
+    let d = new Date();
+
+    console.log(`
+  =================================================================================================================================================
+  Elevator has been called to floor: "${floor}" @ "${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}" on "${d.getMonth()}-${d.getDate()}-${d.getFullYear()} "
+  =================================================================================================================================================
+    `)
+
+    if (direction === 0) {
+      elvA.call(floor, "down");
+    } else {
+      elvA.call(floor, "up");
+    }
+
+
+  }, Math.floor(Math.random() * 30000) + 1000);
+*/

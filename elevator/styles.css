@@ -1,0 +1,149 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body, .row {
+  display: flex;
+  flex-direction: row;
+  place-content: center;
+}
+
+#status-section, .column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+
+#elvA, #elvB {
+  height: 100vh;
+}
+
+#elvA {
+  border-right: 1px solid orange;
+}
+
+.row {
+  padding: 0.3em;
+  border-bottom: 1px solid orange;
+  flex-wrap: wrap;
+}
+
+
+.indicator {
+  cursor: pointer;
+  width: 2.5em;
+  height: 2.5em;
+  line-height: calc(2.5em - 11px);
+  border: 1px double #111;
+  border-width: 5px;
+  border-color: #333;
+  color: #111;
+  margin-right: 4px;
+  text-align: center;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+}
+
+.direction-indicator {
+  cursor: pointer;
+}
+
+#elvA, #elvB {
+  width: 50%;
+}
+
+h3 {
+  margin: 0;
+  padding: 0.25em;
+  width: 100%;
+  background-color: gold;
+  text-align: center;
+}
+
+hr {
+  margin: 0;
+  color: gold;
+  width: 100%;
+  border-bottom: none;
+}
+
+#elvAStatus, #elvBStatus {
+  align-self: start;
+  width: 100%;
+  height: 30rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  border-bottom: 1px solid tan;
+}
+
+.status {
+  font-family: 'Calibri';
+  line-height: 2em;
+  margin: 0;
+  font-size: .75em;
+  height: 2em;
+  width: 100%;
+}
+
+table {
+  border-collapse: collapse !important;
+}
+
+.stat-col {
+  border-right: 1px solid red;
+  border-bottom: 1px dotted red;
+  font-size: 1.5em;
+  line-height: .75em; 
+  padding-right: 0.5em;
+  text-align: center;
+}
+
+.stat-msg {
+  border-bottom: 1px dotted #444;
+  width: 100%;
+  padding-left: 0.5em;
+}
+
+.selected {
+  border-color: yellow !important;
+  color: yellow;
+}
+
+.current {
+  background-color: yellow;
+  color: #111 !important;
+}
+
+.inactive {
+  color: #ded;
+}
+
+.button {
+  height: 2rem;
+  place-self: center;
+  width: 3rem;
+  margin-right: 1rem;
+  color: white;
+  font-weight: bold;
+}
+.run {
+  background-color: green;
+}
+.stop {
+  background-color: red;
+}
+
+.number {
+  background-color: indigo;
+  font-size: 1rem;
+  color: lightgray;
+  padding: 0 0.25rem;
+  border-radius: 0.5rem;
+  font-weight: bold !important;
+}
