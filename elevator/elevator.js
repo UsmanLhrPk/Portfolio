@@ -285,8 +285,7 @@ function runElv() {
   if(elevator.isMoving) {
     consoleLog("The elevator is already running", elevator.name);
   } else {
-    elevator.selectQueueDirection();
-    if (elevator.direction) {
+    if (elevator.queueDirection) {
       elevator.isMoving = true;
       elevator.moveElevator();  
     } else {
